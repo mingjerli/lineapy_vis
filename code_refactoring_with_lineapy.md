@@ -29,7 +29,10 @@ When we run above code in LineaPy, LineaPy will construct a Linea Graph that rep
 :-----------------:|:-----------------------:|
 ![](session_graph.png) | ![](session_graph_code.png)  
 
-Note that, at the end of the code, there are two `lineapy.save` statements to save objects(`agg_df` and `summary_df`) as artifacts(`agg` and `summary`).
+Note that, each node in the Linea Graph might has different propertiers in our implementation but we don't need to go to the detail here to achieve the goal of this post. 
+Thus, we use the same dot style to represent all nodes for simplicity.
+
+At the end of the code, there are two `lineapy.save` statements to save objects(`agg_df` and `summary_df`) as artifacts(`agg` and `summary`).
 These statements tell LineaPy to mark nodes in the Linea Graph that represent these two objects as following:
 
 | LineaGraph | Code |

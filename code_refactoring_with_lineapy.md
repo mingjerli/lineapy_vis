@@ -2,12 +2,12 @@
 
 In this post, we explain how LineaPy code slicing and refactoring work with minimal computer science knowledge.
 
-But let's still start with some computer science and this is the only computer science we need to know to underestand rest of the post. In computer science, code can be represented as some graph structures. 
-For instance, abstract syntax tree(AST) is a tree, connected acyclic graph, representation of the abstract syntactic structure of program code. LineaPy is also powered by a graph stucture called Linea Graph. Similiar to AST, Linea Graph is a graph representation of program code.
+But let's start with some computer science, which is the only computer science we need to know to understand the rest of the post. In computer science, we can use some graph structures to represent code. 
+For instance, an abstract syntax tree(AST) is a tree, connected acyclic graph, representing the conceptual syntactic structure of program code. 
 
-All we need to know here is each Linea Graph can be represented as a piece of code and vice versa.
+Under the hood, a graph structure called Linea Graph power LineaPy. Like AST, Linea Graph is a graph representation of program code and vice versa.
 
-Let's start form following piece of code:
+Let's start with the following piece of code:
 
 ``` python
 import pandas as pd
@@ -23,17 +23,17 @@ art_agg = lineapy.save(agg_df,'agg')
 art_summary = lineapy.save(summary_df,'summary')
 ```
 
-When we run above code in LineaPy, LineaPy will construct a Linea Graph that represents the code as following:
+When we run the above code in LineaPy, LineaPy will construct a Linea Graph that represents the code as follows:
 
 | LineaGraph | Code |
 :-----------------:|:-----------------------:|
 ![](session_graph.png) | ![](session_graph_code.png)  
 
-Note that, each node in the Linea Graph might has different propertiers in our implementation but we don't need to go to the detail here to achieve the goal of this post. 
+Note that each node in the Linea Graph might have different properties in our implementation, but we don't need to go into detail here to achieve the goal of this post. 
 Thus, we use the same dot style to represent all nodes for simplicity.
 
 At the end of the code, there are two `lineapy.save` statements to save objects(`agg_df` and `summary_df`) as artifacts(`agg` and `summary`).
-These statements tell LineaPy to mark nodes in the Linea Graph that represent these two objects as following:
+These statements tell LineaPy to mark nodes in the Linea Graph that represent these two objects as
 
 | LineaGraph | Code |
 :-----------------:|:-----------------------:|
@@ -47,7 +47,7 @@ If we focus on the first artifact, `agg`, and highlight all predecessors of the 
 :-----------------:|:-----------------------:|
 ![](art1_graph.png) | ![](art1_graph_code.png)  
 
-Note that, the highlighted code is exactly the result we get from LineaPy `get_code` API; i.e., if we run following code
+Note that the highlighted code is exactly the result we get from LineaPy `get_code` API; i.e., if we run the following code
 
 ``` python
 print(art_agg.get_code())
@@ -64,7 +64,7 @@ clean_df = raw_df.assign(b=raw_df.a)
 agg_df = clean_df.groupby(["a"]).sum()
 ```
 
-Similarly, if we focus on the second artifact, `summary`, and highlight all predecessors of the value node in blue we can have a subgraph and corresponding code like
+Similarly, if we focus on the second artifact, `summary`, and highlight all predecessors of the value node in blue, we can have a subgraph and corresponding code like
 
 | LineaGraph | Code |
 :-----------------:|:-----------------------:|
@@ -72,10 +72,11 @@ Similarly, if we focus on the second artifact, `summary`, and highlight all pred
 
 ## Code Refactoring
 
-Now, when we try to create a pipeline that produce the two artifacts(`agg` and `summary`). 
-We can just execute codes we obtain from `art_agg.get_code()` and `art_summary.get_code()` separately.
-However, we can easily find out this is not idea because part of the code has been executed twice because they are common to both artifacts. 
-What it mean in Linea Graph is there is a overlapping between subgraphs for `agg` and `summary`. 
+Now, when we try to create a pipeline that produces the two artifacts(`agg` and `summary`). 
+We can execute codes we obtain from `art_agg.get_code()` and `art_summary.get_code()` separately.
+However, this could be better because part of the code has been executed twice. 
+After all, it is common to both artifacts. 
+In Linea Graph, there is an overlapping between subgraphs for `agg` and `summary`. 
 Thus, we can separate common nodes from the two subgraphs as a new subgraph(as green) and corresponding code like
 
 | LineaGraph | Code |
@@ -138,7 +139,7 @@ if __name__ == "__main__":
     print(artifacts)
 ```
 
-where `get_clean_df_for_artifact_summary_and_downstream` is corresponding to the green subgraph, `get_agg` is corresponding to the red subgraph, and `get_summary` is corresponding to the blue subgraph.
+where `get_clean_df_for_artifact_summary_and_downstream` corresponds to the green subgraph, `get_agg` corresponds to the red subgraph, and `get_summary` corresponds to the blue subgraph.
 
 ## Final Thought
 
